@@ -11,7 +11,6 @@ public class P_kong extends Character {
 
 
 
-
     @Override
     public int normalAttack() {
         return (int) (super.normalAttack()*(this.getNormalAttackBonus()+1));
