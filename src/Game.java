@@ -1,3 +1,7 @@
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.Scanner;
 public class Game {
     // 创建两个玩家角色对象
@@ -340,6 +344,53 @@ public class Game {
                 System.out.println("\033[32m" + game.PlayerName + "\033[0m" + "死亡");
                 System.out.println("\033[33m" + game.EnemyName + "\033[0m" + "获得胜利");
                 break;
+            }
+        }
+    }
+
+    //局域网对战
+    public void LAN() {
+        
+        ServerSocket serverSocket;
+        Socket player2;
+        PrintWriter outputPlayer2;
+        //建立房间或者加入房间
+        System.out.println("请选择:");
+        System.out.println("1.建立房间");
+        System.out.println("2.加入房间");
+        Scanner sc = new Scanner(System.in);
+        int choice = sc.nextInt();
+        switch (choice) {
+            case 1 -> {
+                // System.out.println("请输入端口号(1024-65535):");
+                // int port = sc.nextInt();
+                try {
+                    serverSocket = new ServerSocket(6666);
+                    player2 = serverSocket.accept();
+                    System.out.println("玩家2已加入游戏");
+                    outputPlayer2 = new PrintWriter(player2.getOutputStream(), true);
+                    outputPlayer2.println("欢迎加入游戏，你是玩家2");
+
+                } catch (IOException e) {
+                    System.out.println("端口号已被占用");
+                    e.printStackTrace();
+                }
+            }
+            case 2 -> {
+                // System.out.println("请输入ip:");
+                // String ip = sc.next();
+                // System.out.println("请输入端口号:");
+                // int port = sc.nextInt();
+                String ip = "127.0.0.1";
+                int port = 6666;
+                try {
+                    Socket socket = new Socket(ip, port);
+                    System.out.println("连接成功");
+                    
+                } catch (IOException e) {
+                    System.out.println("连接失败");
+                    e.printStackTrace();
+                }
             }
         }
     }

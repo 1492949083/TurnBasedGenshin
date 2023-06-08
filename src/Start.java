@@ -4,7 +4,8 @@ public class Start {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         System.out.println("欢迎来到回合制原神!");
-        System.out.println("1.单人模式  2.双人模式");
+        // System.out.println("1.单人模式  2.双人模式  3.局域网模式");
+        System.out.println("\33[33m"+"1.单人模式  2.双人模式"+"\33[0m");
         System.out.print("选择你要玩的模式:");
         try {
             int choice = sc.nextInt();
@@ -33,6 +34,18 @@ public class Start {
                         }
                     }
                     break;
+                // case 3:
+                //     System.out.println("你选择了局域网模式");
+                //     while (true) {
+                //         Game game = new Game();
+                //         game.LAN();
+                //         System.out.print("是否继续游戏?(y/n)");
+                //         String sr = sc.next();
+                //         if (sr.equals("n")) {
+                //             break;
+                //         }
+                //     }
+                //     break;
                 default:
                     System.out.println("\33[33m"+"输入错误,请重新输入!"+"\33[0m");
                     main(args);   // 递归调用main方法
