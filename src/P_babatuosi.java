@@ -33,14 +33,14 @@ public class P_babatuosi extends Character {
 
     @Override
     public int skillAttack() {
-        return (int) (super.skillAttack()*(this.getSkillAttackBonus()+1));
+        return (int) (super.normalAttack()*(this.getSkillAttackBonus()+1));
     }
 
 
     @Override
     public int ultimateAttack() {
         i = 3;
-        return (int) (super.ultimateAttack()*(this.getUltimateAttackBonus()+1));
+        return (int) (super.normalAttack()*(this.getUltimateAttackBonus()+1));
     }
 
     @Override

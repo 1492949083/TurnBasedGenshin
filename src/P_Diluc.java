@@ -56,7 +56,7 @@ public class P_Diluc extends Character {
      */
     @Override
     public int skillAttack() {
-        return (int) (super.skillAttack()+(getSkillAttackBonus()+1)*(getElementalDmgBonus()+1));
+        return (int) (super.normalAttack()+(getSkillAttackBonus()+1)*(getElementalDmgBonus()+1));
     }
 
     /**
@@ -65,6 +65,6 @@ public class P_Diluc extends Character {
     @Override
     public int ultimateAttack() {
         d +=1;
-        return (int) (super.skillAttack()+(getUltimateAttackBonus()+1));
+        return (int) (super.normalAttack()+(getUltimateAttackBonus()+1));
     }
 }

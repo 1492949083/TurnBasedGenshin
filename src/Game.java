@@ -2,13 +2,22 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Random;
 import java.util.Scanner;
 public class Game {
     // 创建两个玩家角色对象
-    Character[] players = {new Bot(),new P_Diluc(), new M_qqr(), new P_kong(), new P_babatuosi(), new P_hutao(), new P_ying(),new M_leiyingshushi()};
-    Character[] enemies = {new Bot(), new P_Diluc(), new M_qqr(), new P_kong(), new P_babatuosi(), new P_hutao(), new P_ying(),new M_leiyingshushi()};
+    Character[] players = {new Bot(),new P_Diluc(), new M_qqr(), new P_kong(), new P_babatuosi(), new P_hutao(), new P_ying(),new M_leiyingshushi(),new P_leize(),new P_keqing(),new P_yanfei()};
+    Character[] enemies = {new Bot(), new P_Diluc(), new M_qqr(), new P_kong(), new P_babatuosi(), new P_hutao(), new P_ying(),new M_leiyingshushi(),new P_leize(),new P_keqing(),new P_yanfei()};
     private String PlayerName;
     private String EnemyName;
+
+    private int nldMax = 4;
+    private int nldn = 1;
+
+    private int nlds = 1;
+
+    private int nldu = 2;
+
 
     public Game() {
     }
@@ -76,7 +85,7 @@ public class Game {
             System.out.println();
             System.out.println();
             // 选择技能 以白色 绿色 黄色排序
-            System.out.print("\033[32m" + game.PlayerName + "\033[0m" + "请选择技能:");
+            System.out.print("\033[32m" + game.PlayerName + "\033[0m" + "你有" + players[playerIndex].getSkillBeans() + "个能量豆," + "请选择技能:");
             System.out.print("\033[0m" + "1."+ players[playerIndex].getNormalAttackName() + "\033[0m" + "  " + "\033[1;32m" + "2."+ players[playerIndex].getSkillAttackName() + "\033[0m" + "  " + "\033[1;33m" + "3."+ players[playerIndex].getUltimateAttackName() + "\033[0m" + "  ");
 
 
@@ -90,6 +99,9 @@ public class Game {
             pgj = pgj + players[playerIndex].passiveSkill();
             switch (choice) {
                 case 1 -> {
+                    if (players[playerIndex].getSkillBeans() < nldMax) {
+                        players[playerIndex].setSkillBeans(players[playerIndex].getSkillBeans()+nldn);
+                    }
                     if (enemies[enemyIndex].getDef() > players[playerIndex].normalAttack()) {
                         pgj = 0;
                     } else {
@@ -98,20 +110,33 @@ public class Game {
                     P_attackName = players[playerIndex].getNormalAttackName();
                 }
                 case 2 -> {
-                    if (enemies[enemyIndex].getDef() > players[playerIndex].skillAttack()) {
-                        pgj = 0;
-                    } else {
-                        pgj += players[playerIndex].skillAttack() - enemies[enemyIndex].getDef();
+                    if (players[playerIndex].getSkillBeans() >= nlds){
+                        players[playerIndex].setSkillBeans(players[playerIndex].getSkillBeans()-nlds);
+                        if (enemies[enemyIndex].getDef() > players[playerIndex].skillAttack()) {
+                            pgj = 0;
+                        } else {
+                            pgj += players[playerIndex].skillAttack() - enemies[enemyIndex].getDef();
+                        }
+                        P_attackName = players[playerIndex].getSkillAttackName();
+                    }else {
+                        System.out.println("你的能量豆不够！");
+                        continue;
                     }
-                    P_attackName = players[playerIndex].getSkillAttackName();
+
                 }
                 case 3 -> {
-                    if (enemies[enemyIndex].getDef() > players[playerIndex].ultimateAttack()) {
-                        pgj = 0;
+                    if (players[playerIndex].getSkillBeans() >= nldu) {
+                        players[playerIndex].setSkillBeans(players[playerIndex].getSkillBeans()-nldu);
+                        if (enemies[enemyIndex].getDef() > players[playerIndex].ultimateAttack()) {
+                            pgj = 0;
+                        } else {
+                            pgj += players[playerIndex].ultimateAttack() - enemies[enemyIndex].getDef();
+                        }
+                        P_attackName = players[playerIndex].getUltimateAttackName();
                     } else {
-                        pgj += players[playerIndex].ultimateAttack() - enemies[enemyIndex].getDef();
+                        System.out.println("你的能量豆不够！");
+                        continue;
                     }
-                    P_attackName = players[playerIndex].getUltimateAttackName();
                 }
                 default -> {
                     System.out.println("输入错误,请重新输入");
@@ -120,6 +145,10 @@ public class Game {
             }
 
 
+            if (Math.random() < players[playerIndex].getCritRate()) {
+                pgj = (int) (pgj * (players[playerIndex].getCritDmg()+1));
+                System.out.println("暴击！！！");
+            }
             // 减去敌人生命值
             int dHp = enemies[enemyIndex].getHp() - pgj; // d - p
             enemies[enemyIndex].setHp(dHp);
@@ -140,11 +169,21 @@ public class Game {
             // 敌人使用被动
             enemies[enemyIndex].passiveSkill();
             //随机选择敌方技能
-            int s = (int) (Math.random() * 3);
+            int s = 0;
+            if (enemies[enemyIndex].getSkillBeans() >= 2) {
+                s = new Random().nextInt(3);
+            }else if (enemies[enemyIndex].getSkillBeans() < 1) {
+                s = 0;
+            } else {
+                s = new Random().nextInt(2);
+            }
             int dgj = 0;
             String D_attackName = null;
             switch (s) {
                 case 0 -> {
+                    if (enemies[enemyIndex].getSkillBeans() < nldMax) {
+                        enemies[enemyIndex].setSkillBeans(enemies[enemyIndex].getSkillBeans()+nldn);
+                    }
                     if (players[playerIndex].getDef() > enemies[enemyIndex].normalAttack()) {
                         dgj = 0;
                     } else{
@@ -153,6 +192,7 @@ public class Game {
                     D_attackName = enemies[enemyIndex].getNormalAttackName();
                 }
                 case 1 -> {
+                    enemies[enemyIndex].setSkillBeans(enemies[enemyIndex].getSkillBeans()-nlds);
                     if (players[playerIndex].getDef() > enemies[enemyIndex].skillAttack()) {
                         dgj = 0;
                     } else{
@@ -161,6 +201,7 @@ public class Game {
                     D_attackName = enemies[enemyIndex].getSkillAttackName();
                 }
                 case 2 -> {
+                    enemies[enemyIndex].setSkillBeans(enemies[enemyIndex].getSkillBeans()-nldu);
                     if (players[playerIndex].getDef() > enemies[enemyIndex].ultimateAttack()) {
                         dgj = 0;
                     } else{
@@ -170,6 +211,10 @@ public class Game {
                 }
             }
             // 减去玩家生命值
+            if (Math.random() < (enemies[enemyIndex].getCritRate()+1)) {
+                dgj = (int) (dgj * enemies[enemyIndex].getCritDmg());
+                System.out.println("暴击！！！");
+            }
             int pHp = players[playerIndex].getHp() - dgj; // p - d
             players[playerIndex].setHp(pHp);
             if (dgj == 0) {
@@ -225,7 +270,7 @@ public class Game {
             System.out.println();
             System.out.println();
             // 选择技能 以白色 绿色 黄色排序
-            System.out.print("\033[32m" + game.PlayerName + "\033[0m" + "请选择技能:");
+            System.out.print("\033[32m" + game.PlayerName + "\033[0m" + "你有" + players[playerIndex].getSkillBeans() + "个能量豆," + "请选择技能:");
             System.out.print("\033[0m" + "1."+ players[playerIndex].getNormalAttackName() + "\033[0m" + "  " + "\033[1;32m" + "2."+ players[playerIndex].getSkillAttackName() + "\033[0m" + "  " + "\033[1;33m" + "3."+ players[playerIndex].getUltimateAttackName() + "\033[0m" + "  ");
             // 读取p1输入
             int p1 = sc.nextInt();
@@ -237,6 +282,9 @@ public class Game {
             pgj = pgj + players[playerIndex].passiveSkill();
             switch (p1) {
                 case 1 -> {
+                    if (players[playerIndex].getSkillBeans() < nldMax) {
+                        players[playerIndex].setSkillBeans(players[playerIndex].getSkillBeans()+nldn);
+                    }
                     if (enemies[enemyIndex].getDef() > players[playerIndex].normalAttack()) {
                         pgj = 0;
                     } else {
@@ -245,20 +293,33 @@ public class Game {
                     P_attackName = players[playerIndex].getNormalAttackName();
                 }
                 case 2 -> {
-                    if (enemies[enemyIndex].getDef() > players[playerIndex].skillAttack()) {
-                        pgj = 0;
-                    } else {
-                        pgj += players[playerIndex].skillAttack() - enemies[enemyIndex].getDef();
+                    if (players[playerIndex].getSkillBeans() >= nlds){
+                        players[playerIndex].setSkillBeans(players[playerIndex].getSkillBeans()-nlds);
+                        if (enemies[enemyIndex].getDef() > players[playerIndex].skillAttack()) {
+                            pgj = 0;
+                        } else {
+                            pgj += players[playerIndex].skillAttack() - enemies[enemyIndex].getDef();
+                        }
+                        P_attackName = players[playerIndex].getSkillAttackName();
+                    }else {
+                        System.out.println("你的能量豆不够！");
+                        continue;
                     }
-                    P_attackName = players[playerIndex].getSkillAttackName();
+
                 }
                 case 3 -> {
-                    if (enemies[enemyIndex].getDef() > players[playerIndex].ultimateAttack()) {
-                        pgj = 0;
+                    if (players[playerIndex].getSkillBeans() >= nldu) {
+                        players[playerIndex].setSkillBeans(players[playerIndex].getSkillBeans()-nldu);
+                        if (enemies[enemyIndex].getDef() > players[playerIndex].ultimateAttack()) {
+                            pgj = 0;
+                        } else {
+                            pgj += players[playerIndex].ultimateAttack() - enemies[enemyIndex].getDef();
+                        }
+                        P_attackName = players[playerIndex].getUltimateAttackName();
                     } else {
-                        pgj += players[playerIndex].ultimateAttack() - enemies[enemyIndex].getDef();
+                        System.out.println("你的能量豆不够！");
+                        continue;
                     }
-                    P_attackName = players[playerIndex].getUltimateAttackName();
                 }
                 default -> {
                     System.out.println("输入错误,请重新输入");
@@ -268,6 +329,10 @@ public class Game {
 
 
             // 减去敌人生命值
+            if (Math.random() < players[playerIndex].getCritRate()) {
+                pgj = (int) (pgj * (players[playerIndex].getCritDmg()+1));
+                System.out.println("暴击！！！");
+            }
             int dHp = enemies[enemyIndex].getHp() - pgj; // d - p
             enemies[enemyIndex].setHp(dHp);
             if (pgj == 0) {
@@ -289,7 +354,7 @@ public class Game {
             System.out.println();
             System.out.println();
             // 选择技能 以白色 绿色 黄色排序
-            System.out.print("\033[33m" + game.EnemyName + "\033[0m" + "请选择技能:");
+            System.out.print("\033[33m" + game.EnemyName + "\033[0m" + "你有" + enemies[enemyIndex].getSkillBeans() + "个能量豆," + "请选择技能:");
             System.out.print("\033[0m" + "1."+ enemies[enemyIndex].getNormalAttackName() + "\033[0m" + "  " + "\033[1;32m" + "2."+ enemies[enemyIndex].getSkillAttackName() + "\033[0m" + "  " + "\033[1;33m" + "3."+ enemies[enemyIndex].getUltimateAttackName() + "\033[0m" + "  ");
 
 
@@ -302,6 +367,9 @@ public class Game {
             String D_attackName;
             switch (p2) {
                 case 1 -> {
+                    if (enemies[enemyIndex].getSkillBeans() < nldMax) {
+                        enemies[enemyIndex].setSkillBeans(enemies[enemyIndex].getSkillBeans()+nldn);
+                    }
                     if (players[playerIndex].getDef() > enemies[enemyIndex].normalAttack()) {
                         dgj = 0;
                     } else {
@@ -310,20 +378,32 @@ public class Game {
                     D_attackName = enemies[enemyIndex].getNormalAttackName();
                 }
                 case 2 -> {
-                    if (players[playerIndex].getDef() > enemies[enemyIndex].skillAttack()) {
-                        dgj = 0;
+                    if (enemies[enemyIndex].getSkillBeans() >= nlds) {
+                        enemies[enemyIndex].setSkillBeans(enemies[enemyIndex].getSkillBeans()-nlds);
+                        if (players[playerIndex].getDef() > enemies[enemyIndex].skillAttack()) {
+                            dgj = 0;
+                        } else {
+                            dgj = enemies[enemyIndex].skillAttack() - players[playerIndex].getDef();
+                        }
+                        D_attackName = enemies[enemyIndex].getSkillAttackName();
                     } else {
-                        dgj = enemies[enemyIndex].skillAttack() - players[playerIndex].getDef();
+                        System.out.println("你的能量豆不够！");
+                        continue;
                     }
-                    D_attackName = enemies[enemyIndex].getSkillAttackName();
                 }
                 case 3 -> {
-                    if (players[playerIndex].getDef() > enemies[enemyIndex].ultimateAttack()) {
-                        dgj = 0;
+                    if (enemies[enemyIndex].getSkillBeans() >= nldu) {
+                        enemies[enemyIndex].setSkillBeans(enemies[enemyIndex].getSkillBeans()-nldu);
+                        if (players[playerIndex].getDef() > enemies[enemyIndex].ultimateAttack()) {
+                            dgj = 0;
+                        } else {
+                            dgj = enemies[enemyIndex].ultimateAttack() - players[playerIndex].getDef();
+                        }
+                        D_attackName = enemies[enemyIndex].getUltimateAttackName();
                     } else {
-                        dgj = enemies[enemyIndex].ultimateAttack() - players[playerIndex].getDef();
+                        System.out.println("你的能量豆不够！");
+                        continue;
                     }
-                    D_attackName = enemies[enemyIndex].getUltimateAttackName();
                 }
                 default -> {
                     System.out.println("输入错误,请重新输入");
@@ -331,6 +411,10 @@ public class Game {
                 }
             }
             // 减去玩家生命值
+            if (Math.random() < (enemies[enemyIndex].getCritRate()+1)) {
+                dgj = (int) (dgj * enemies[enemyIndex].getCritDmg());
+                System.out.println("暴击！！！");
+            }
             int pHp = players[playerIndex].getHp() - dgj; // p - d
             players[playerIndex].setHp(pHp);
             if (dgj == 0) {
@@ -350,7 +434,7 @@ public class Game {
 
     //局域网对战
     public void LAN() {
-        
+
         ServerSocket serverSocket;
         Socket player2;
         PrintWriter outputPlayer2;
@@ -386,7 +470,7 @@ public class Game {
                 try {
                     Socket socket = new Socket(ip, port);
                     System.out.println("连接成功");
-                    
+
                 } catch (IOException e) {
                     System.out.println("连接失败");
                     e.printStackTrace();

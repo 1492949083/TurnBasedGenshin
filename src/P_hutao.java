@@ -46,7 +46,7 @@ public class P_hutao extends Character {
         if (getHp()>maxHp){
             setHp(maxHp);
         }
-        return (int) (super.ultimateAttack()*(this.getUltimateAttackBonus()+1)*(getElementalDmgBonus()+1));
+        return (int) (super.normalAttack()*(this.getUltimateAttackBonus()+1)*(getElementalDmgBonus()+1));
     }
 
     int ys = 0;

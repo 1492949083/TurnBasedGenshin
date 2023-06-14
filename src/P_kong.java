@@ -1,4 +1,4 @@
-public class P_kong extends Character {
+public class    P_kong extends Character {
 
 
     public P_kong() {
@@ -19,12 +19,12 @@ public class P_kong extends Character {
 
     @Override
     public int skillAttack() {
-        return (int) (super.skillAttack()*(this.getSkillAttackBonus()+1));
+        return (int) (super.normalAttack()*(this.getSkillAttackBonus()+1));
     }
 
 
     @Override
     public int ultimateAttack() {
-        return (int) (super.ultimateAttack()*(this.getUltimateAttackBonus()+1));
+        return (int) (super.normalAttack()*(this.getUltimateAttackBonus()+1));
     }
 }

@@ -15,6 +15,8 @@ public abstract class Character {
     private String normalAttackName = "普通攻击"; //普通攻击名称
     private String skillAttackName = "技能攻击";  //技能攻击名称
     private String ultimateAttackName = "大招攻击"; //大招攻击名称
+
+    private int skillBeans = 0;      //技能豆
     private int hp;              //生命值
     private int maxHp;           //最大生命值
     private int atk;             //攻击力
@@ -27,8 +29,8 @@ public abstract class Character {
     private double ultimateAttackBonus = 0;  //大招攻击加成
     private double physicalDmgBonus = 0;   //物理伤害加成
     private double elementalDmgBonus = 0;  //元素伤害加成
-    private double critRate = 0;      //暴击率
-    private double critDmg = 0;       //暴击伤害
+    private double critRate = 0.05;      //暴击率
+    private double critDmg = 0.5;       //暴击伤害
     private Element element;     //元素类型
 
     private Element attachedElement = Element.W; //附着元素类型
@@ -70,6 +72,10 @@ public abstract class Character {
 
     public String getUltimateAttackName() {
         return ultimateAttackName;
+    }
+
+    public int getSkillBeans() {
+        return skillBeans;
     }
 
     public int getHp() {
@@ -146,6 +152,9 @@ public abstract class Character {
         this.em = em;
     }
 
+    public void setSkillBeans(int skillBeans) {
+        this.skillBeans = skillBeans;
+    }
     public void setNormalAttackBonus(double normalAttackBonus) {
         this.normalAttackBonus = normalAttackBonus;
     }
@@ -168,11 +177,11 @@ public abstract class Character {
 
     public void setCritRate(double critRate) {
         this.critRate = critRate;
-    }
+    } //设置爆率
 
     public void setCritDmg(double critDmg) {
         this.critDmg = critDmg;
-    }
+    }  //设置暴击伤害
 
     // 普通攻击
     public int normalAttack() {
